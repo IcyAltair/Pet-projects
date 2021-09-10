@@ -1,0 +1,1 @@
+Weekly automation project
