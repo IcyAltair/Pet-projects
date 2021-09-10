@@ -1,1 +1,1 @@
-Python module for matrix permutation
+Python module for matrix multiplication
