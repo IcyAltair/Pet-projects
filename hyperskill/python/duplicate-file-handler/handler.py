@@ -46,9 +46,34 @@ class Duplicator:
     def get_file_info(self):
         for path in self.paths:
             self.file.update({"path": path, "ext": os.path.splitext(path)[1][1:], "size": os.path.getsize(path)})
-            self.library.append(self.file)
+            if len(self.ext) != 0:
+                if self.file["ext"] == self.ext:
+                    self.library.append(self.file)
+            else:
+                self.library.append(self.file)
             self.file = {}
-        print(self.library)
+
+    def filter_and_sort(self):
+        self.library = list(filter(lambda x: x.pop("ext", None), self.library))
+        self.library = sorted(self.library, key=lambda x: x["size"], reverse=self.way == "1")
+
+    def get_duplicates(self):
+        paths, sizes = [], []
+        for file in self.library:
+            paths.append(file["path"])
+            sizes.append(file["size"])
+        self.library = []
+        for i in range(len(sizes)):
+            if sizes.count(sizes[i]) > 1:
+                self.library.append({"path": paths[i], "size": sizes[i]})
+
+    def print_library(self):
+        size = 0
+        for file in self.library:
+            if file["size"] != size:
+                size = file["size"]
+                print(str(size) + " bytes")
+            print(file["path"])
 
 
 def main():
@@ -57,6 +82,9 @@ def main():
     file_handler.build_tree()
     file_handler.print_tree()
     file_handler.get_file_info()
+    file_handler.filter_and_sort()
+    file_handler.get_duplicates()
+    file_handler.print_library()
 
 
 if __name__ == "__main__":
