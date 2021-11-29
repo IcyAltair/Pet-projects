@@ -1,4 +1,6 @@
 import argparse
+from collections import Counter
+import hashlib
 import sys
 import os
 
@@ -12,6 +14,9 @@ class Duplicator:
         self.paths = []
         self.file = {"path": "", "ext": "", "size": ""}
         self.library = []
+        self.hash_value = {"value": "", "size": "", "file": ""}
+        self.duplicates = []
+        self.hash_values = []
 
     def parse(self):
         ways = ("1", "2", "")
@@ -75,6 +80,50 @@ class Duplicator:
                 print(str(size) + " bytes")
             print(file["path"])
 
+    def check_duplicates(self):
+        choices = ("yes", "no")
+        answer = input("Check for duplicates?\n")
+        while answer not in choices:
+            print("Wrong option")
+            answer = input("Check for duplicates?\n")
+        if answer == choices[0]:
+            self.get_hash()
+            self.clean_hash()
+            self.print_hash()
+        else:
+            sys.exit(1)
+
+    def get_hash(self):
+        hash_md5 = hashlib.md5()
+        for file in self.library:
+            self.hash_value["size"] = str(file["size"]) + " bytes"
+            with open(file["path"], "rb") as f:
+                # for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(f.read())
+            self.hash_value["value"] = hash_md5.hexdigest()
+            self.hash_value["file"] = file["path"]
+            self.duplicates.append(self.hash_value)
+            self.hash_values.append(self.hash_value["value"])
+            self.hash_value = {"value": "", "size": "", "file": ""}
+
+    def clean_hash(self):
+        if len(set(self.hash_values)) == len(self.hash_values):
+            return
+        dictOfElems = dict(Counter(self.hash_values))
+        print(dictOfElems)
+
+    def print_hash(self):
+        size, hash_value, counter = "", "", 1
+        for duplicate in self.duplicates:
+            if duplicate["size"] != size and duplicate["value"] != hash_value:
+                print()
+                print(duplicate["size"])
+                print("Hash:", duplicate["value"])
+                size = duplicate["size"]
+                hash_value = duplicate["value"]
+            print(str(counter) + ".", duplicate["file"])
+            counter += 1
+
 
 def main():
     file_handler = Duplicator()
@@ -85,6 +134,7 @@ def main():
     file_handler.filter_and_sort()
     file_handler.get_duplicates()
     file_handler.print_library()
+    file_handler.check_duplicates()
 
 
 if __name__ == "__main__":
