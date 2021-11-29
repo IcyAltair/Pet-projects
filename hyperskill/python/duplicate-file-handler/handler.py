@@ -94,10 +94,10 @@ class Duplicator:
             sys.exit(1)
 
     def get_hash(self):
-        hash_md5 = hashlib.md5()
         for file in self.library:
             self.hash_value["size"] = str(file["size"]) + " bytes"
             with open(file["path"], "rb") as f:
+                hash_md5 = hashlib.md5()
                 # for chunk in iter(lambda: f.read(4096), b""):
                 hash_md5.update(f.read())
             self.hash_value["value"] = hash_md5.hexdigest()
@@ -107,19 +107,22 @@ class Duplicator:
             self.hash_value = {"value": "", "size": "", "file": ""}
 
     def clean_hash(self):
-        if len(set(self.hash_values)) == len(self.hash_values):
-            return
-        dictOfElems = dict(Counter(self.hash_values))
-        print(dictOfElems)
+        stats = Counter(self.hash_values)
+        for v in self.hash_values:
+            if stats[v] == 1:
+                self.duplicates = list(filter(lambda x: x["value"] != v, self.duplicates))
 
     def print_hash(self):
         size, hash_value, counter = "", "", 1
         for duplicate in self.duplicates:
-            if duplicate["size"] != size and duplicate["value"] != hash_value:
+            if duplicate["size"] != size:
                 print()
                 print(duplicate["size"])
                 print("Hash:", duplicate["value"])
                 size = duplicate["size"]
+                hash_value = duplicate["value"]
+            if duplicate["value"] != hash_value:
+                print("Hash:", duplicate["value"])
                 hash_value = duplicate["value"]
             print(str(counter) + ".", duplicate["file"])
             counter += 1
