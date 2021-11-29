@@ -17,6 +17,8 @@ class Duplicator:
         self.hash_value = {"value": "", "size": "", "file": ""}
         self.duplicates = []
         self.hash_values = []
+        self.list_of_files = []
+        self.entered_data = []
 
     def parse(self):
         ways = ("1", "2", "")
@@ -125,7 +127,47 @@ class Duplicator:
                 print("Hash:", duplicate["value"])
                 hash_value = duplicate["value"]
             print(str(counter) + ".", duplicate["file"])
+            self.list_of_files.append({duplicate["file"]:duplicate["size"]})
             counter += 1
+
+    def ask_to_delete(self):
+        choices = ("yes", "no")
+        answer = input("Delete files?\n")
+        while answer not in choices:
+            print("Wrong option")
+            answer = input("Delete files?\n")
+        if answer == choices[0]:
+            self.ask_list()
+            self.delete_files()
+        else:
+            sys.exit(1)
+
+    def ask_list(self):
+        numbers = [x + 1 for x in range(0, len(self.list_of_files))]
+        print(numbers)
+        while True:
+            try:
+                self.entered_data = list(map(int, input("Enter file numbers to delete\n").split()))
+                break
+            except Exception as e:
+                print("Wrong format")
+        if len(self.entered_data) == 0:
+            print("Wrong format")
+            self.ask_list()
+        for i in self.entered_data:
+            if i not in numbers:
+                print("Wrong format")
+                self.ask_list()
+
+
+    def delete_files(self):
+        total = 0
+        for i in self.entered_data:
+            os.remove(list(self.list_of_files[i-1].keys())[0])
+            total += int(list(self.list_of_files[i-1].values())[0][:-6])
+        print("Total freed up space:", total, "bytes")
+
+
 
 
 def main():
@@ -138,6 +180,7 @@ def main():
     file_handler.get_duplicates()
     file_handler.print_library()
     file_handler.check_duplicates()
+    file_handler.ask_to_delete()
 
 
 if __name__ == "__main__":
