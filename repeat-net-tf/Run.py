@@ -12,7 +12,7 @@ from Preprocess import RepeatNetPreprocessing as rnp
 
 class RunRepeatNet():
     def __init__(self):
-        parser = argparse.ArgumentParser()
+        self.parser = argparse.ArgumentParser()
         self.parser.add_argument("-eps", "--epoches", type=int, default=10,
                                  help="Set quantity of epochs")
         self.parser.add_argument("-embs", "--embedding_size", type=int, default=16,
@@ -21,9 +21,9 @@ class RunRepeatNet():
                                  help="Set size of hidden")
         self.parser.add_argument("-ivs", "--item_vocab_size", type=int, default=11,
                                  help="Set size of items' vocabulary")
-        parser.add_argument("-m", "--mode", type=str, default="train",
+        self.parser.add_argument("-m", "--mode", type=str, default="train",
                             help="Set mode for model execution")
-        self.args = parser.parse_args()
+        self.args = self.parser.parse_args()
         self.train, self.test, self.valid = None, None, None
         self.train_size = 0
         self.data_directory = "/data/"
