@@ -16,11 +16,11 @@ class RepeatNetPreprocessing():
         def clean(l): return [int(x) for x in l.strip('[]').split(',')]
 
         count = 0
-        with codecs.open(self.sample_file, encoding="utf-8") as f:
+        with codecs.open(self.source, encoding="utf-8") as f:
             csv_reader = csv.reader(f, delimiter="|")
             for row in csv_reader:
                 count += 1
-                self.samples.append([tf.convert_to_tensor[count], tf.convert_to_tensor(
+                self.samples.append([tf.convert_to_tensor([count]), tf.convert_to_tensor(
                     clean(row[0])), tf.convert_to_tensor(clean(row[1]))])
 
     def __getitem__(self, index):
