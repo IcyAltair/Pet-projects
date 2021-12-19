@@ -1,6 +1,7 @@
 import argparse
 import codecs
 import numpy as np
+import os
 import sys
 import tensorflow as tf
 from tensorflow import keras
@@ -22,12 +23,12 @@ class RunRepeatNet():
         self.parser.add_argument("-ivs", "--item_vocab_size", type=int, default=11,
                                  help="Set size of items' vocabulary")
         self.parser.add_argument("-m", "--mode", type=str, default="train",
-                            help="Set mode for model execution")
+                                 help="Set mode for model execution")
         self.args = self.parser.parse_args()
         self.train, self.test, self.valid = None, None, None
         self.train_size = 0
-        self.data_directory = "/data/"
-        self.output_directory = "/output/"
+        self.data_directory = os.path.abspath(os.getcwd()) + "/data/"
+        self.output_directory = os.path.abspath(os.getcwd()) + "/output/"
 
     def get_data(self):
         self.train = rnp(self.data_directory + "demo.train")
@@ -35,18 +36,20 @@ class RunRepeatNet():
         self.valid = rnp(self.data_directory + "demo.valid")
         self.train_size = len(self.train)
 
-    def train(self):
-        pass
+    def training(self):
+        model = rn(embedding_size=self.args.embedding_size,
+                   hidden_size=self.args.hidden_size,
+                   item_vocab_size=self.args.item_vocab_size)
 
-    def infer(self):
+    def infering(self):
         pass
 
     def execute(self):
         self.get_data()
         if self.args.mode == "train":
-            self.train()
+            self.training()
         elif self.args.mode == "infer":
-            self.infer()
+            self.infering()
         else:
             print("Unsupported execution mode")
             sys.exit(1)
