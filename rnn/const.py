@@ -1,0 +1,2 @@
+TIME_STEP = 10
+EPOCHS = 50
